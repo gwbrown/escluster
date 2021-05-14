@@ -101,10 +101,10 @@
          (data-dir (build-path node-dir "data"))
          (logs-dir (build-path node-dir "logs"))]
    (verbose-log "Creating config, log, and data dirs for node [~v] at [~v]..." node node-dir)
-   (delete-directory/files data-dir)
+   (delete-directory/files data-dir #:must-exist? #f)
    (make-directory* data-dir)
    (make-directory* logs-dir)
-   (delete-directory/files config-dir)
+   (delete-directory/files config-dir #:must-exist? #f)
    (copy-directory/files (build-path elasticsearch-dir "config") config-dir)
    (call-with-output-file (build-path config-dir "elasticsearch.yml")
     (lambda (out)
