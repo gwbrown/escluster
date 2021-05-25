@@ -9,7 +9,6 @@
          "log.rkt"
          "node.rkt")
 
-(define verbose-mode (make-parameter #t))
 (define number-of-nodes (make-parameter 3))
 (define rebuild-pkg (make-parameter #f))
 (define debug-mode (make-parameter #f))

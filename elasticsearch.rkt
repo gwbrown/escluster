@@ -12,24 +12,25 @@
 (define (extracted-es-dir tmp-dir)
  (build-path tmp-dir "elasticsearch"))
 
-(define (extract-es-pkg pkg-path tmp-dir)
+(define (extract-es-pkg tmp-dir)
  (info-log "Extracting Elastcsearch...")
- (if (directory-exists? (tmp-dir))
-  (verbose-log "Working directory [~v] exists" (tmp-dir))
+ (if (directory-exists? tmp-dir)
+  (verbose-log "Working directory [~v] exists" tmp-dir)
   (begin
-   (verbose-log "Working directory [~v] does not exist, creating it..." (tmp-dir))
-   (make-directory* (tmp-dir))))
+   (verbose-log "Working directory [~v] does not exist, creating it..." tmp-dir)
+   (make-directory* tmp-dir)))
  (if (directory-exists? (extracted-es-dir tmp-dir))
   (begin
    (info-log "Directory [~v] exists, removing and re-creating..." (extracted-es-dir tmp-dir))
    (delete-directory/files (extracted-es-dir tmp-dir)))
   (begin
    (verbose-log "ES directory [~v] does not exist yet, creating..." (extracted-es-dir tmp-dir))
-   (make-directory* (tmp-dir))))
- (let [(es-tar (build-path (extracted-es-dir) "espkg.tar"))]
+   (make-directory* (extracted-es-dir tmp-dir))))
+ (verbose-log "Starting ungzip...")
+ (let [(es-tar (build-path (extracted-es-dir tmp-dir) "espkg.tar"))]
   (call-with-output-file es-tar
    (lambda (out)
-    (call-with-input-file pkg-path
+    (call-with-input-file (es-package)
      (lambda (in)
       (gunzip-through-ports in out))))
    #:exists 'replace)
