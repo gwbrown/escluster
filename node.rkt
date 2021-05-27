@@ -14,6 +14,10 @@
   (init id)
   (define node-id id)
   (define subproc #f)
+  (define stdout #f)
+  (define stdin #f)
+  (define stderr #f)
+
   (super-new)
 
   (define/public (node-dir)
@@ -27,6 +31,12 @@
 
   (define/public (logs-dir)
    (build-path (node-dir) "logs"))
+  
+  (define/public (get-stdout)
+   (port->string stdout #:close? #f))
+
+  (define/public (get-stderr)
+   (port->string stderr #:close? #f))
 
   (define/public (create-dirs (recreate-dirs #f))
    (when recreate-dirs
@@ -41,12 +51,10 @@
     (begin
      (verbose-log "Config dir does not exist, copying default config files...")
      (make-parent-directory* (config-dir))
-     (copy-directory/files (build-path (extracted-es-dir (tmp-dir)) "config") (config-dir)))
-    (verbose-log "Config directory exists, ignoring..."))
-   (verbose-log "Done creating directories, adding settings...")
-   (call-with-output-file (build-path (config-dir) "elasticsearch.yml")
-    (lambda (out)
-     (fprintf out "
+     (copy-directory/files (build-path (extracted-es-dir (tmp-dir)) "config") (config-dir))
+     (call-with-output-file (build-path (config-dir) "elasticsearch.yml")
+      (lambda (out)
+       (fprintf out "
 cluster.name: ~a
 node.name: ~a
 path.data: ~a
@@ -54,13 +62,14 @@ path.logs: ~a
 http.port: ~a
 xpack.license.self_generated.type: ~a
 "
-      "escluster-cluster"
-      (format "node-~a" node-id)
-      (data-dir)
-      (logs-dir)
-      (+ 9200 node-id)
-      "basic"))
-    #:exists 'append)
+        "escluster-cluster"
+        (format "node-~a" node-id)
+        (data-dir)
+        (logs-dir)
+        (+ 9200 node-id)
+        "basic"))
+      #:exists 'append))
+    (verbose-log "Config directory exists, ignoring..."))
    (verbose-log "Done setting up data, log, and config directories."))
 
 
@@ -77,7 +86,7 @@ xpack.license.self_generated.type: ~a
     #f
     (subprocess-status subproc)))
 
-  (define/public (start-elasticsearch (recreate-dirs #f) (debug-mode #f))
+  (define/public (start (recreate-dirs #f) (debug-mode #f))
    (create-dirs recreate-dirs)
    (let* ([path-conf (format "ES_PATH_CONF=~a" (config-dir))]
           [debug-str (if debug-mode 
@@ -87,14 +96,13 @@ xpack.license.self_generated.type: ~a
                              "-Des.shutdown_feature_flag_enabled=true" 
                              debug-str)]
           [es-executable (build-path (extracted-es-dir (tmp-dir)) "bin" "elasticsearch")])
-    (let-values ([(sp _1 _2 _3) (subprocess #f #f #f 
-                                 "/usr/bin/env" 
-                                 path-conf
-                                 java-opts
-                                 es-executable)]) 
-     (set! subproc sp))))
+    (set!-values (subproc stdout stdin stderr) (subprocess #f #f #f 
+                                                "/usr/bin/env" 
+                                                path-conf
+                                                java-opts
+                                                es-executable)))) 
 
-  (define/public (stop-elasticsearch)
+  (define/public (stop)
    (subprocess-kill subproc #f)
    (info-log (format "Attempting to stop node [~a] with pid [~a]..." node-id (subprocess-pid subproc)))
    (let loop ([current-status (subprocess-status subproc)]

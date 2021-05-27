@@ -22,7 +22,8 @@
  (if (directory-exists? (extracted-es-dir tmp-dir))
   (begin
    (info-log "Directory [~v] exists, removing and re-creating..." (extracted-es-dir tmp-dir))
-   (delete-directory/files (extracted-es-dir tmp-dir)))
+   (delete-directory/files (extracted-es-dir tmp-dir))
+   (make-directory* (extracted-es-dir tmp-dir)))
   (begin
    (verbose-log "ES directory [~v] does not exist yet, creating..." (extracted-es-dir tmp-dir))
    (make-directory* (extracted-es-dir tmp-dir))))
