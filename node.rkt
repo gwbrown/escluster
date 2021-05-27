@@ -31,6 +31,9 @@
 
   (define/public (logs-dir)
    (build-path (node-dir) "logs"))
+
+  (define/public (get-id)
+   node-id)
   
   (define/public (get-stdout)
    (port->string stdout #:close? #f))
