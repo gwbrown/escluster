@@ -1,6 +1,10 @@
-#lang racket
+#lang racket/base
 
-(require "elasticsearch.rkt"
+(require racket/class
+         racket/file
+         racket/format
+         racket/port
+         "elasticsearch.rkt"
          "log.rkt")
 
 (provide

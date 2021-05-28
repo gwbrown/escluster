@@ -1,6 +1,9 @@
-#lang racket
+#lang racket/base
 
-(require "node.rkt")
+(require racket/class
+         racket/list
+         racket/vector
+         "node.rkt")
 
 (provide cluster%)
 
