@@ -99,11 +99,13 @@ xpack.license.self_generated.type: ~a
                              "-Des.shutdown_feature_flag_enabled=true" 
                              debug-str)]
           [es-executable (build-path (extracted-es-dir (tmp-dir)) "bin" "elasticsearch")])
-    (set!-values (subproc stdout stdin stderr) (subprocess #f #f #f 
-                                                "/usr/bin/env" 
-                                                path-conf
-                                                java-opts
-                                                es-executable)))) 
+    (set!-values (subproc stdout stdin stderr)
+     (parameterize ([current-subprocess-custodian-mode 'kill])
+      (subprocess #f #f #f
+       "/usr/bin/env"
+       path-conf
+       java-opts
+       es-executable)))))
 
   (define/public (stop)
    (subprocess-kill subproc #f)
