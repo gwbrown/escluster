@@ -38,23 +38,3 @@
 (info-log "Configured cluster size is [~v]." (number-of-nodes))
 (verbose-log "Using Elasticsearch package at: [~v]." (es-package))
 (verbose-log "Using directory: [~v]." (tmp-dir))
-
-(define elasticsearch-dir (~> (tmp-dir)
-                           (string->path)
-                           (build-path _ "elasticsearch")))
-                           
-
-
-(printf "Cluster is running. Press enter to kill the cluster.")
-
-(read-line (current-input-port) 'any)
-(for ([sp subprocs])
- (printf "Killing ~a..." (subprocess-pid sp))
- (printf "~a, " (subprocess-kill sp #t))
- (let loop ([current-status (subprocess-status sp)])
-  ;;(verbose-log "Current status: [~s], equal to 'running: [~s]" current-status (equal? current-status 'running))
-  (when (equal? 'running current-status)
-   (sleep 0.1)
-   (loop (subprocess-status sp))))
- (printf "result: ~a~n" (subprocess-status sp)))
-

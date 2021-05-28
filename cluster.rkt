@@ -6,8 +6,13 @@
 
 (define cluster%
  (class object%
+  (init [size 0])
   (super-new)
-  (define nodes #())
+
+  (define nodes 
+   (list->vector 
+    (map (lambda (node-id) (new node% [id node-id])) 
+     (range size))))
   
 
   (define/public (node-count)
@@ -36,5 +41,23 @@
     (lambda (node) 
      (send node stop))
     nodes))))
-
  
+(module+ test
+ (require rackunit)
+
+ (test-case "Cluster is initialized with the right number of nodes"
+  (let ([cluster (new cluster% [size 5])])
+   (check-equal? 5 (send cluster node-count))))
+
+ (test-case "Cluster's default size is correct"
+  (let ([cluster (new cluster%)])
+   (check-equal? 0 (send cluster node-count))))
+ 
+ (test-case "Adding nodes to a cluster works as expected"
+  (let ([cluster (new cluster%)]
+        [node? (lambda (node) (is-a? node node%))])
+   (for ([node-id (range 3)])
+    (send cluster add-node)
+    (check-equal? (+ 1 node-id) (send cluster node-count))
+    (check-pred node? (send cluster get-node node-id) (format "node ~a is not a node!" node-id))))))
+  
