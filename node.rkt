@@ -97,7 +97,7 @@ xpack.license.self_generated.type: ~a
    (create-dirs recreate-dirs)
    (let* ([path-conf (format "ES_PATH_CONF=~a" (config-dir))]
           [debug-str (if debug-mode 
-                      "-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=5005"
+                      "-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=5005,suspend=y"
                       "")]
           [java-opts (format "ES_JAVA_OPTS=~a ~a" 
                              "-Des.shutdown_feature_flag_enabled=true" 

@@ -28,7 +28,7 @@
    (vector-ref nodes node-id))
   
   (define/public (start-node node-id #:debug (debug #f) #:reset (reset #f))
-   (send (get-node node-id) start debug reset))
+   (send (get-node node-id) start reset debug))
 
   (define/public (stop-node node-id)
    (send (get-node node-id) stop))

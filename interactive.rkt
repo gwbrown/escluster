@@ -31,7 +31,7 @@
  (send cluster stop-all))
 
 (define (start node-id #:debug (debug #f) #:reset (reset #f))
- (send cluster start node-id #:debug debug #:reset reset))
+ (send cluster start-node node-id #:debug debug #:reset reset))
 
 (define (get-node-dir node-id)
  (let ([node (get-node node-id)])
