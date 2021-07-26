@@ -1,9 +1,12 @@
 #lang racket/base
 
 (require racket/class
-         "cluster.rkt")
+         "cluster.rkt"
+         "node.rkt"
+         "elasticsearch.rkt")
 
 (provide
+ rebuild-elasticsearch
  number-of-nodes
  add-node
  get-node
@@ -17,6 +20,10 @@
 (define number-of-nodes (make-parameter 3))
 
 (define cluster (new cluster% [size (number-of-nodes)]))
+
+(define (rebuild-elasticsearch)
+ (build-elasticsearch)
+ (extract-es-pkg (tmp-dir)))
 
 (define (add-node)
  (send cluster add-node))
