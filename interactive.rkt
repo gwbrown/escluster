@@ -24,7 +24,7 @@
 
 (define (rebuild-elasticsearch)
  (build-elasticsearch)
- (extract-es-pkg (tmp-dir)))
+ (extract-es-pkg (tmp-dir) 'snapshot))
 
 (define (add-node)
  (send cluster add-node))
